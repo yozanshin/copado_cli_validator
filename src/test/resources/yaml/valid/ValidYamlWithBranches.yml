@@ -1,0 +1,39 @@
+regex_lib:
+    field: '(?s)(.[^\n]+<fields>(?:(?!<fields>).)*?<fullName>___REPLACEVALUE___</fullName>(?:(?!<fields>).)*?</fields>)'
+    user-permission: '(?s)(.[^\n]+<userPermissions>(?:(?!<userPermissions>).)*?<name>___REPLACEVALUE___</name>(?:(?!<userPermissions>).)*?</userPermissions>)'
+    object-permission: '(?s)(.[^\n]+<objectPermissions>(?:(?!<objectPermissions>).)*?<object>___REPLACEVALUE___</object>(?:(?!<objectPermissions>).)*?</objectPermissions>)'
+
+rules:
+    invalid_fields:
+        file_names:
+            - 'Account.object'
+        regex_name: 'field' # name must exist on the regex-lib section
+        replace_values: # Use to apply multiple times for same regex for the below listed values
+            - Jigsaw
+            - SicDesc
+        replace_with: # value to be replaced for the matching regex
+        branches: # no branch means all branches. otherwise is limited to the one listed below
+            - master
+            - dev
+    invalid_user_permissions:
+        extensions:
+            - profile
+            - permissionset
+        regex_name: 'user-permission'
+        replace_values:
+            - Account.Jigsaw
+            - Contact.Jigsaw
+        replace_with: 'false'
+        exclusion_branches:
+            - master
+    invalid_object:
+            extensions:
+                - layout
+            regex_name: 'object-permission'
+            replace_values:
+                - Account.Jigsaw
+            replace_with:
+            branches:
+            exclusion_branches:
+
+

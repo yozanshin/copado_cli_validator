@@ -1,0 +1,12 @@
+regex_lib:
+    field_billing: '(?s)(.[^\n]+<fields>(?:(?!<fields>).)*?<fullName>BillingAddress</fullName>(?:(?!<fields>).)*?</fields>)'
+
+rules:
+    no_replace_values:
+        file_names:
+            - 'Account.object'
+        regex_name: 'field_billing' # name must exist on the regex-lib section
+        replace_with: 'ALL_REGEX_IS_REPLACED'
+        branches: # no branch means all branches. otherwise is limited to the one listed below
+            - master
+            - dev

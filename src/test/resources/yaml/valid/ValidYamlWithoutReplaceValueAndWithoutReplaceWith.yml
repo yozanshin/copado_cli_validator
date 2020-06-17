@@ -1,0 +1,11 @@
+regex_lib:
+    remove-simple-tag: '(<userPermissions>[\s\S]*</userPermissions>)'
+
+rules:
+    remove-user-permission:
+        extensions:
+            - xml
+        regex_name: 'remove-simple-tag'
+        replace_values:
+        replace_with:
+        branches:

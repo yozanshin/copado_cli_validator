@@ -1,0 +1,63 @@
+# Copado YML repository settings
+# This file will allow users to process files within a repository
+# A use case for this is to remove offending XML tags that will make a file not deployable.
+# E.g. remove all ManageSandbox user permissions from a profile, since this user permission 
+# only exists on production environments and will fail when trying to be deployed to sandboxes.
+# E.g. remove FLS of deprecated fields, etc
+
+
+regex_lib:
+    field: '(?s)(<fields>(?:(?!<fields>).)*?<fullName>___REPLACEVALUE___</fullName>(?:(?!<fields>).)*?</fields>)'
+    user-permission: '(?s)(<userPermissions>(?:(?!<userPermissions>).)*?<name>___REPLACEVALUE___</name>(?:(?!<userPermissions>).)*?</userPermissions>)'
+    field-permission: '(?s)(<fieldPermissions>(?:(?!<fieldPermissions>).)*?<field>___REPLACEVALUE___</field>(?:(?!<fieldPermissions>).)*?</fieldPermissions>)'
+    app-permission: '(?s)(<applicationVisibilities>(?:(?!<applicationVisibilities>).)*?<application>___REPLACEVALUE___</application>(?:(?!<applicationVisibilities>).)*?</applicationVisibilities>)'
+    tab-permission: '(?s)(<tabSettings>(?:(?!<tabSettings>).)*?<tab>___REPLACEVALUE___</tab>(?:(?!<tabSettings>).)*?</tabSettings>)'
+    class-permission: '(?s)(<classAccesses>(?:(?!<classAccesses>).)*?<apexClass>___REPLACEVALUE___</apexClass>(?:(?!<classAccesses>).)*?</classAccesses>)'
+    page-permission: '(?s)(<pageAccesses>(?:(?!<pageAccesses>).)*?<apexPage>___REPLACEVALUE___</apexPage>(?:(?!<pageAccesses>).)*?</pageAccesses>)'
+    object-permission: '(?s)(<objectPermissions>(?:(?!<objectPermissions>).)*?<object>___REPLACEVALUE___</object>(?:(?!<objectPermissions>).)*?</objectPermissions>)'
+    recordtype-permission: '(?s)(<recordTypeVisibilities>(?:(?!<recordTypeVisibilities>).)*?<recordType>___REPLACEVALUE___</recordType>(?:(?!<recordTypeVisibilities>).)*?</recordTypeVisibilities>)'
+    remove-simple-tag: '(<___REPLACEVALUE___>[\s\S]*</___REPLACEVALUE___>)'
+    field-translation: '(?s)(<fields>(?:(?!<fields>).)*?<name>___REPLACEVALUE___</name>(?:(?!<fields>).)*?</fields>)'
+
+rules:
+    invalid_fields: # choose a rule name without spaces or special characters
+        file_names: # list exact file names
+            - 'Account.object'
+            - 'Contact.object'
+            - 'Lead.object'
+        regex_name: 'field' # name must exist on the regex-lib section
+        replace_values: # for each value the regex will apply, using this value on the regex __REPLACEVALUE__
+            - Jigsaw
+            - SicDesc
+        branches: # no branch means all branches. otherwise is limited to the one listed below
+    invalid_user_permissions: # choose a rule name without spaces or special characters
+        extensions: # list extensions
+            - profile
+            - permissionset
+        regex_name: 'user-permission' # name must exist on the regex-lib section
+        replace_values: # for each value the regex will apply, using this value on the regex __REPLACEVALUE__
+            - ActivateOrder
+            - ManageSandboxes
+            - EditBillingInfo
+            - ManageRealm
+        branches: # no branch means all branches. otherwise is limited to the one listed below
+        replace_with: # leave it blank to remove (replace by nothing) the matching regex, or enter a text to be replaced.
+    invalid_class_permissions: # choose a rule name without spaces or special characters
+        extensions: # list extensions
+            - profile
+            - permissionset
+        regex_name: 'class-permission' # name must exist on the regex-lib section
+        replace_values: # for each value the regex will apply, using this value on the regex __REPLACEVALUE__
+            - TH1__[\w_]+ # this will avoid all class permission for the managed package TH1,
+            - xx__[\w_]+ # change xx for the namespace for any managed package. Credits to Bobby White for this tip!!!
+            - classNameX # just 1 of your own class
+            - namespaceX__classNameY # just 1 class which is part of the managed package namespaceX with name classNameY
+        branches: # no branch means all branches. otherwise is limited to the one listed below
+    remove-all-user-permissions:
+        extensions:
+            - profile
+        regex_name: 'remove-simple-tag'
+        replace_values:
+            - userPermissions
+        replace_with:
+        branches:

@@ -1,0 +1,17 @@
+regex_lib:
+    field: '(?s)(.[^\n]+<fields>(?:(?!<fields>).)*?<fullName>___REPLACEVALUE___</fullName>(?:(?!<fields>).)*?</fields>)'
+
+rules:
+    empty_regex_name:
+        file_names:
+            - 'Account.object'
+        regex_name:
+        replace_values: # Use to apply multiple times for same regex for the below listed values
+            - Jigsaw
+            - SicDesc
+        replace_with: # value to be replaced for the matching regex
+        branches: # no branch means all branches. otherwise is limited to the one listed below
+            - master
+            - dev
+
+

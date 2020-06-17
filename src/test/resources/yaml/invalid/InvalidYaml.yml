@@ -1,0 +1,15 @@
+regex_lib:
+    field: '(?s)(.[^\n]+<fields>(?:(?!<fields>).)*?<fullName>___REPLACEVALUE___</fullName>(?:(?!<fields>).)*?</fields>)';
+
+rules=
+    invalid_fields:
+        file_names:
+            - 'Account.object'
+        regex_name: 'field' # name must exist on the regex-lib section
+        replace_values:
+            - Jigsaw
+            - SicDesc
+        branches: # no branch means all branches. otherwise is limited to the one listed below
+            - master
+            - dev
+

@@ -1,0 +1,11 @@
+regex_lib:
+   customText: 'Test Account'
+
+rules:
+    empty_replace_value: # choose a rule name without spaces or special characters
+        file_names: # list exact file names
+            - 'AccountOperationsTest.cls'
+        regex_name: 'customText' # name must exist on the regex-lib section
+        replace_values: 'notList'
+        branches: # no branch means all branches. otherwise is limited to the one listed below
+
