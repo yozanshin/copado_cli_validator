@@ -72,11 +72,7 @@ public class YamlProcessor {
 
     private void validateRegExs(final CopadoYaml yaml) {
         yaml.getRegex_lib().values().stream()
-                .filter(this::validateRegEx)
-                .findFirst()
-                .ifPresent(value -> {
-                    throw new CopadoYamlValidationException("invalid_regex", "Regular Expression is not valid");
-                });
+                .forEach(this::validateRegEx);
     }
 
     private void validateRules(final CopadoYaml yaml) {
@@ -88,48 +84,47 @@ public class YamlProcessor {
         validateBranchesAndExclusions(yaml);
     }
 
-    private boolean validateRegEx(final String regEx) {
+    private void validateRegEx(final String regEx) {
         try {
             Pattern.compile(regEx);
-            return false;
         } catch (PatternSyntaxException ex) {
-            return true;
+            throw new CopadoYamlValidationException("invalid_regex", "Regular Expression is not valid");
         }
     }
 
     private void validateEmptyRegExNames(final CopadoYaml yaml) {
         yaml.getRules().values().stream()
-                .filter(rule -> rule.getRegex_name() == null)
-                .findFirst()
-                .ifPresent(value -> {
-                    throw new CopadoYamlValidationException("empty_regex_name", "Regex node must be defined");
+                .forEach(rule -> {
+                    if (rule.getRegex_name() == null) {
+                        throw new CopadoYamlValidationException("empty_regex_name", "Regex node must be defined");
+                    }
                 });
     }
 
     private void validateInvalidRegExNames(final CopadoYaml yaml) {
         yaml.getRules().values().stream()
-                .filter(rule -> !yaml.getRegex_lib().containsKey(rule.getRegex_name()))
-                .findFirst()
-                .ifPresent(value -> {
-                    throw new CopadoYamlValidationException("invalid_regex_name", "Regular expression name in this rule was not found");
+                .forEach(rule -> {
+                    if (!yaml.getRegex_lib().containsKey(rule.getRegex_name())) {
+                        throw new CopadoYamlValidationException("invalid_regex_name", "Regular expression name in this rule was not found");
+                    }
                 });
     }
 
     private void validateNoFilenameOrExtensions(final CopadoYaml yaml) {
         yaml.getRules().values().stream()
-                .filter(rule -> rule.getFile_names() == null && rule.getExtensions() == null)
-                .findFirst()
-                .ifPresent(value -> {
-                    throw new CopadoYamlValidationException("no_filename_or_extensions", "At least file_names or extensions node must be defined");
+                .forEach(rule -> {
+                    if (rule.getFile_names() == null && rule.getExtensions() == null) {
+                        throw new CopadoYamlValidationException("no_filename_or_extensions", "At least file_names or extensions node must be defined");
+                    }
                 });
     }
 
     private void validateFilenameAndExtensions(final CopadoYaml yaml) {
         yaml.getRules().values().stream()
-                .filter(value -> value.getFile_names() != null && value.getExtensions() != null)
-                .findFirst()
-                .ifPresent(value -> {
-                    throw new CopadoYamlValidationException("filename_and_extensions", "Is not possible to use file_names and extensions nodes at same time");
+                .forEach(value -> {
+                    if (value.getFile_names() != null && value.getExtensions() != null) {
+                        throw new CopadoYamlValidationException("filename_and_extensions", "Is not possible to use file_names and extensions nodes at same time");
+                    }
                 });
     }
 
@@ -137,20 +132,20 @@ public class YamlProcessor {
         yaml.getRules().values().stream()
                 .filter(value -> value.getExtensions() != null)
                 .flatMap(value -> value.getExtensions().stream())
-                .filter(extension -> extension.matches(EXTENSION_REGEX))
-                .findFirst()
-                .ifPresent(extension -> {
-                    throw new CopadoYamlValidationException("invalid_extension",
-                            String.format(INVALID_EXTENSION_PATTERN, extension));
+                .forEach(extension -> {
+                    if (extension.matches(EXTENSION_REGEX)) {
+                        throw new CopadoYamlValidationException("invalid_extension",
+                                String.format(INVALID_EXTENSION_PATTERN, extension));
+                    }
                 });
     }
 
     private void validateBranchesAndExclusions(final CopadoYaml yaml) {
         yaml.getRules().values().stream()
-                .filter(value -> value.getBranches() != null && value.getExclusion_branches() != null)
-                .findFirst()
-                .ifPresent(value -> {
-                    throw new CopadoYamlValidationException("branches_and_exclusion", "Is not possible to use branches and exclusion_branches nodes at same time");
+                .forEach(value -> {
+                    if (value.getBranches() != null && value.getExclusion_branches() != null) {
+                        throw new CopadoYamlValidationException("branches_and_exclusion", "Is not possible to use branches and exclusion_branches nodes at same time");
+                    }
                 });
     }
 
